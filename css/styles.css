@@ -1,0 +1,465 @@
+/* ===========================================================================
+ * styles.css — BSN / DigiD asylum-seeker prototype
+ *
+ * Visual system: "Trustworthy Dutch-civic". The palette follows the Dutch
+ * government house style (Rijkshuisstijl) — the same blue family used by
+ * Rijksoverheid and Mijn Belastingdienst — so the service reads as genuinely
+ * state-issued and trustworthy, while staying warm and legible for a
+ * low-literacy, multilingual audience.
+ *
+ * Design rationale (mapped to inclusive / universal design principles):
+ *  - Large touch targets: every interactive element is >= 56px tall (WCAG 2.5.5).
+ *  - High contrast, no thin fonts: AA+ contrast, weight 500+ for body.
+ *  - Government-blue palette, no flag tricolour; status uses icon+text+colour,
+ *    never colour alone (WCAG 1.4.1, colour-blind safe).
+ *  - Icon-first: every label sits beside an icon (dual coding for low literacy).
+ *  - RTL: [dir=rtl] flips layout for Arabic automatically.
+ *  - Low-bandwidth mode: body.low-data drops gradients/shadows/decoration.
+ * ======================================================================== */
+
+:root {
+  /* Rijkshuisstijl-inspired blues */
+  --navy-900: #0b2545;   /* deepest navy        */
+  --navy-800: #154273;   /* Rijksoverheid donkerblauw — brand */
+  --blue-700: #01689b;   /* primary action      */
+  --blue-600: #007bc7;   /* hemelblauw — accent */
+  --blue-100: #d6e6f4;   /* light glyph fill    */
+  --blue-50:  #eaf2fb;   /* lightest tint       */
+
+  --bg:       #f4f6fa;   /* cool light canvas   */
+  --surface:  #ffffff;
+  --ink:      #1a2433;
+  --ink-soft: #51607a;
+  --line:     #d4dce8;
+  --line-soft:#e4eaf2;
+  --white:    #ffffff;
+
+  --amber:    #b06a00;
+  --amber-bg: #fbeccd;
+  --ok:       #1c7a4a;
+  --ok-bg:    #d8efe0;
+  --focus:    #f08f2e;   /* orange focus ring — max visibility, on-brand accent */
+
+  --r-lg: 18px;
+  --r-md: 14px;
+  --r-sm: 10px;
+  --tap: 56px;            /* minimum touch target */
+  --pad: 18px;
+  --shadow-card: 0 4px 18px rgba(21,66,115,.08);
+  --shadow-up:   0 10px 28px rgba(11,37,69,.16);
+  --font: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  font-weight: 500;
+  color: var(--ink);
+  background: #dde3ec;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* phone frame so the prototype reads as a mobile app in the demo ------------ */
+.phone {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-up);
+}
+body.low-data .phone { box-shadow: none; }
+
+/* ---- top bar ------------------------------------------------------------ */
+.topbar {
+  background: linear-gradient(160deg, var(--navy-800), var(--navy-900));
+  color: var(--white);
+  padding: 14px var(--pad);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+body.low-data .topbar { background: var(--navy-800); }
+.topbar .brand { display: flex; flex-direction: column; line-height: 1.18; }
+.topbar .brand b { font-size: 1.05rem; font-weight: 800; letter-spacing: .2px; }
+.topbar .brand span { font-size: .8rem; color: #a9c6e6; }
+.topbar .spacer { flex: 1; }
+
+.iconbtn {
+  width: var(--tap); height: var(--tap);
+  min-width: var(--tap);
+  border: none; border-radius: var(--r-md);
+  background: rgba(255,255,255,.12);
+  color: var(--white);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+.iconbtn svg { width: 26px; height: 26px; }
+.iconbtn:active { background: rgba(255,255,255,.26); }
+.iconbtn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* small square brand badge in the topbar */
+.brandmark {
+  width: 42px; height: 42px; min-width: 42px;
+  border-radius: 11px;
+  background: rgba(255,255,255,.14);
+  color: var(--white);
+  display: grid; place-items: center;
+}
+.brandmark svg { width: 24px; height: 24px; }
+
+/* ---- status strip (offline / low-data) ---------------------------------- */
+.statusstrip {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 9px var(--pad);
+  background: var(--navy-800);
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+body.low-data .statusstrip { border-top: none; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.14);
+  color: var(--white);
+  font-size: .78rem; font-weight: 700;
+  padding: 6px 11px; border-radius: 999px;
+}
+.pill svg { width: 14px; height: 14px; }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: #6ee7b7; }
+.pill.toggle { cursor: pointer; border: 1px solid rgba(255,255,255,.28); }
+.pill.toggle[aria-pressed="true"] { background: var(--focus); color: #3a2000; border-color: transparent; }
+
+/* ---- scroll area -------------------------------------------------------- */
+.screen {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--pad);
+  padding-bottom: 120px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+h1.title { font-size: 1.55rem; font-weight: 800; color: var(--navy-800); letter-spacing: -.2px; }
+p.lead { font-size: 1.04rem; color: var(--ink-soft); }
+.section-label { font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+
+/* ---- big task cards (home) ---------------------------------------------- */
+.taskcard {
+  width: 100%;
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 15px;
+  min-height: 86px;
+  text-align: start;
+  cursor: pointer;
+  color: var(--ink);
+}
+body:not(.low-data) .taskcard { box-shadow: var(--shadow-card); }
+.taskcard:active { transform: scale(.99); }
+.taskcard:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.taskcard[disabled] { opacity: .55; cursor: not-allowed; background: #eef1f6; }
+.taskcard.active { border-color: var(--blue-600); border-width: 2px; }
+
+.taskcard .glyph {
+  width: 54px; height: 54px; min-width: 54px;
+  border-radius: var(--r-md);
+  background: var(--blue-100);
+  color: var(--navy-800);
+  display: grid; place-items: center;
+}
+.taskcard .glyph svg { width: 30px; height: 30px; }
+.taskcard[disabled] .glyph { background: #dde3ec; color: #8a97ac; }
+.taskcard .meta { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.taskcard .meta b { font-size: 1.12rem; font-weight: 800; }
+.taskcard .meta small { color: var(--ink-soft); font-size: .86rem; }
+.taskcard .chev { color: #95a3ba; display: grid; }
+.taskcard .chev svg { width: 22px; height: 22px; }
+
+.statustag {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: .76rem; font-weight: 800;
+  padding: 4px 10px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 5px;
+  white-space: nowrap;
+}
+.statustag svg { width: 14px; height: 14px; }
+.statustag.todo { background: var(--line-soft); color: var(--ink-soft); }
+.statustag.progress { background: var(--amber-bg); color: var(--amber); }
+.statustag.done { background: var(--ok-bg); color: var(--ok); }
+.statustag.locked { background: var(--line-soft); color: var(--ink-soft); }
+
+/* progress rail on home ---------------------------------------------------- */
+.rail {
+  display: flex; align-items: center; gap: 7px;
+  padding: 2px 0;
+}
+.rail .track { flex: 1; display: flex; gap: 7px; }
+.rail .node {
+  flex: 1; height: 9px; border-radius: 999px; background: var(--line);
+}
+.rail .node.done { background: var(--blue-600); }
+.rail .count { font-size: .82rem; font-weight: 800; color: var(--ink-soft); }
+
+/* ---- generic content card ----------------------------------------------- */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+body:not(.low-data) .card { box-shadow: var(--shadow-card); }
+.card.accent { border-color: var(--blue-600); border-width: 2px; box-shadow: none; }
+.card.ok { border-color: var(--ok); background: var(--ok-bg); box-shadow: none; }
+
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.checklist li { display: flex; gap: 12px; align-items: flex-start; }
+.checklist li span:last-child { padding-top: 8px; }
+.checklist .ico {
+  width: 42px; height: 42px; min-width: 42px; border-radius: var(--r-sm);
+  background: var(--blue-100); color: var(--navy-800);
+  display: grid; place-items: center;
+}
+.checklist .ico svg { width: 22px; height: 22px; }
+
+/* ---- form fields -------------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label {
+  font-size: 1rem; font-weight: 800; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.field label .req {
+  margin-inline-start: auto;
+  color: var(--amber); background: var(--amber-bg);
+  font-size: .72rem; font-weight: 800;
+  padding: 2px 8px; border-radius: 999px;
+}
+.field label svg { width: 20px; height: 20px; color: var(--blue-700); }
+.field input, .field select {
+  min-height: var(--tap);
+  font-family: var(--font);
+  font-size: 1.05rem; font-weight: 600;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  width: 100%;
+}
+.field select { padding-inline-end: 36px; }
+.field input:focus, .field select:focus {
+  outline: none; border-color: var(--blue-600);
+  box-shadow: 0 0 0 3px var(--blue-100);
+}
+.field .hint { font-size: .86rem; color: var(--ink-soft); }
+
+/* radio group as big tappable chips --------------------------------------- */
+.chips { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip {
+  flex: 1; min-width: 96px; min-height: var(--tap);
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface); font-weight: 800; font-size: 1rem;
+  cursor: pointer; color: var(--ink);
+}
+.chip[aria-pressed="true"] {
+  border-color: var(--blue-600); border-width: 2px;
+  background: var(--blue-50); color: var(--navy-800);
+}
+.chip:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* photo upload tile -------------------------------------------------------- */
+.uploadtile {
+  border: 2px dashed var(--blue-600);
+  border-radius: var(--r-md);
+  background: var(--blue-50);
+  color: var(--blue-700);
+  min-height: 104px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; cursor: pointer; font-weight: 800;
+}
+.uploadtile svg { width: 32px; height: 32px; }
+.uploadtile.filled { border-style: solid; background: var(--ok-bg); color: var(--ok); }
+
+/* ---- buttons ------------------------------------------------------------ */
+.btn {
+  min-height: var(--tap);
+  border: none; border-radius: var(--r-md);
+  font-family: var(--font); font-size: 1.08rem; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  cursor: pointer; padding: 0 18px; width: 100%;
+}
+.btn svg { width: 22px; height: 22px; }
+.btn.primary { background: var(--blue-700); color: var(--white); }
+body:not(.low-data) .btn.primary { box-shadow: 0 6px 16px rgba(1,104,155,.28); }
+.btn.primary:active { background: var(--navy-800); }
+.btn.ghost { background: var(--surface); color: var(--blue-700); border: 1.5px solid var(--blue-600); }
+.btn.amber { background: var(--amber-bg); color: var(--amber); border: 1.5px solid #e9c98a; }
+.btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; box-shadow: none; }
+[dir=rtl] .btn svg.flip, [dir=rtl] .iconbtn svg.flip { transform: scaleX(-1); }
+
+/* ---- sticky footer nav -------------------------------------------------- */
+.footer {
+  position: absolute; inset-inline: 0; bottom: 0;
+  background: linear-gradient(transparent, var(--bg) 32%);
+  padding: 16px var(--pad) 18px;
+  display: flex; gap: 10px;
+}
+body.low-data .footer { background: var(--bg); border-top: 1.5px solid var(--line); }
+.footer .btn { flex: 1; }
+.footer .btn.narrow { flex: 0 0 auto; width: var(--tap); padding: 0; }
+
+/* ---- success panel ------------------------------------------------------ */
+.success {
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 20px 6px;
+}
+.success .seal {
+  width: 84px; height: 84px; border-radius: 50%;
+  background: var(--ok-bg); color: var(--ok);
+  display: grid; place-items: center;
+  border: 4px solid #bfe6cf;
+}
+.success .seal svg { width: 46px; height: 46px; }
+.success h1.title { margin-top: 2px; }
+.validrow { font-size: .95rem; color: var(--ink-soft); }
+.validrow b { color: var(--ink); }
+
+/* ---- credential / bank card (signature success element) ----------------- */
+.credential {
+  width: 100%;
+  border-radius: var(--r-lg);
+  padding: 18px;
+  color: var(--white);
+  text-align: start;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, var(--navy-800), var(--navy-900));
+}
+body:not(.low-data) .credential { box-shadow: var(--shadow-up); }
+body.low-data .credential { background: var(--navy-800); }
+.credential .pattern {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 88% -10%, rgba(255,255,255,.10), transparent 42%),
+    radial-gradient(circle at 0% 110%, rgba(0,123,199,.35), transparent 45%);
+}
+body.low-data .credential .pattern { display: none; }
+.credential .crow {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  font-size: .74rem; font-weight: 800; letter-spacing: 1px;
+  color: #a9c6e6; text-transform: uppercase;
+}
+.credential .crow svg { width: 20px; height: 20px; }
+.credential .clabel { position: relative; margin-top: 12px; font-size: .82rem; color: #a9c6e6; }
+.credential .cnum {
+  position: relative;
+  font-size: 1.7rem; font-weight: 800; letter-spacing: 3px;
+  font-variant-numeric: tabular-nums;
+  margin: 2px 0 14px;
+}
+.credential .cfoot {
+  position: relative;
+  display: flex; justify-content: space-between; gap: 12px;
+  font-size: .9rem; font-weight: 700;
+}
+.credential .cfoot small { display: block; font-size: .68rem; font-weight: 800; letter-spacing: .6px; color: #8bb0d8; text-transform: uppercase; }
+.credential.bank { background: linear-gradient(150deg, var(--blue-700), var(--blue-600)); }
+body.low-data .credential.bank { background: var(--blue-700); }
+
+/* ---- modal / bottom sheet ----------------------------------------------- */
+.overlay {
+  position: absolute; inset: 0; z-index: 40;
+  background: rgba(11,37,69,.55);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+body.low-data .overlay { background: rgba(11,37,69,.72); }
+.sheet {
+  background: var(--surface);
+  width: 100%;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 14px var(--pad) calc(18px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 14px;
+  max-height: 88%;
+  overflow-y: auto;
+}
+.sheet .grip { width: 44px; height: 5px; border-radius: 999px; background: var(--line); align-self: center; margin-bottom: 2px; }
+.sheet h2 { font-size: 1.3rem; color: var(--navy-800); display: flex; align-items: center; gap: 10px; }
+.sheet h2 svg { width: 26px; height: 26px; color: var(--blue-700); }
+
+.helprow {
+  display: flex; align-items: center; gap: 12px;
+  border: 1.5px solid var(--line); border-radius: var(--r-md);
+  padding: 12px; min-height: var(--tap);
+}
+.helprow .ico { width: 44px; height: 44px; min-width: 44px; border-radius: var(--r-sm);
+  background: var(--blue-100); color: var(--navy-800); display: grid; place-items: center; }
+.helprow .ico svg { width: 24px; height: 24px; }
+.helprow .meta { flex: 1; min-width: 0; }
+.helprow .meta b { display: block; font-size: 1rem; }
+.helprow .meta small { color: var(--ink-soft); }
+.helprow .call {
+  background: var(--blue-700); color: var(--white);
+  border: none; border-radius: var(--r-sm); padding: 10px 14px;
+  font-weight: 800; min-height: 44px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.helprow .call svg { width: 18px; height: 18px; }
+
+/* ---- language picker grid ----------------------------------------------- */
+.langgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.langbtn {
+  min-height: 76px; border: 1.5px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface); cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+}
+.langbtn b { font-size: 1.18rem; font-weight: 800; color: var(--navy-800); }
+.langbtn small { color: var(--ink-soft); }
+.langbtn[aria-pressed="true"] { border-color: var(--blue-600); border-width: 2px; background: var(--blue-50); }
+.langbtn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* ---- onboarding --------------------------------------------------------- */
+.onboard { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; padding-top: 28px; }
+.onboard .art {
+  width: 154px; height: 154px; border-radius: 50%;
+  background: var(--blue-100); color: var(--navy-800);
+  display: grid; place-items: center;
+  border: 8px solid var(--blue-50);
+}
+.onboard .art svg { width: 78px; height: 78px; }
+.onboard h1 { font-size: 1.6rem; color: var(--navy-800); }
+.onboard p { font-size: 1.08rem; color: var(--ink-soft); max-width: 320px; }
+.dots { display: flex; gap: 8px; }
+.dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; transition: width .2s ease; }
+.dots i.on { background: var(--blue-600); width: 26px; border-radius: 999px; }
+
+/* ---- toast -------------------------------------------------------------- */
+.toast {
+  position: absolute; bottom: 96px; left: 50%; transform: translateX(-50%);
+  background: var(--navy-900); color: var(--white);
+  padding: 12px 18px; border-radius: 999px; font-weight: 800;
+  z-index: 60; display: flex; align-items: center; gap: 8px;
+  box-shadow: var(--shadow-up);
+  max-width: 88%;
+}
+.toast svg { width: 18px; height: 18px; color: #6ee7b7; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .taskcard, .btn, .chip, .langbtn { transition: transform .08s ease, background .15s ease, border-color .15s ease; }
+  .screen > * { animation: rise .25s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+}
