@@ -451,7 +451,7 @@ body.low-data .overlay { background: rgba(11,37,69,.72); }
 
 /* ---- toast -------------------------------------------------------------- */
 .toast {
-  position: absolute; bottom: 96px; left: 50%; transform: translateX(-50%);
+  position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%);
   background: var(--navy-900); color: var(--white);
   padding: 12px 18px; border-radius: 999px; font-weight: 800;
   z-index: 60; display: flex; align-items: center; gap: 8px;
