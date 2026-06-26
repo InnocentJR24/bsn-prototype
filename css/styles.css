@@ -38,6 +38,8 @@
   --amber-bg: #fbeccd;
   --ok:       #1c7a4a;
   --ok-bg:    #d8efe0;
+  --err:      #b3261e;   /* validation error (CW Task 2 Q4) */
+  --err-bg:   #fbe9e7;
   --focus:    #f08f2e;   /* orange focus ring — max visibility, on-brand accent */
 
   --r-lg: 18px;
@@ -463,3 +465,119 @@ body.low-data .overlay { background: rgba(11,37,69,.72); }
   .screen > * { animation: rise .25s ease both; }
   @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 }
+
+/* ===========================================================================
+ * POST-COGNITIVE-WALKTHROUGH REVISION — new components
+ * ======================================================================== */
+
+/* ---- sticky review notes (the "side notes / stickies" for the assignment) -
+   A yellow annotation pinned beside each changed element. Toggled by the
+   "Show changes" pill; hidden entirely when the layer is off. ---------------*/
+.notes .pill.toggle.notes[aria-pressed="true"],
+.pill.toggle.notes[aria-pressed="true"] { background: #ffd23f; color: #4a3500; border-color: transparent; }
+body:not(.notes-on) .sticky { display: none; }
+.sticky {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: #fff8d6;
+  border: 1.5px solid #ecd680;
+  border-inline-start: 5px solid #e6b800;
+  border-radius: var(--r-md);
+  padding: 11px 13px;
+  color: #4a3a00;
+  box-shadow: 0 3px 10px rgba(120,90,0,.12);
+}
+body.low-data .sticky { box-shadow: none; }
+.sticky .num {
+  width: 30px; height: 30px; min-width: 30px; border-radius: 8px;
+  background: #ffd23f; color: #4a3500;
+  display: grid; place-items: center;
+}
+.sticky .num svg { width: 18px; height: 18px; }
+.sticky .sbody { font-size: .86rem; line-height: 1.45; }
+.sticky .sbody b { display: block; font-size: .74rem; font-weight: 800; letter-spacing: .4px;
+  text-transform: uppercase; color: #8a6d00; margin-bottom: 3px; }
+
+/* ---- asylum: illustrated in-app step list (CW Task 1 Q3) -----------------*/
+.steplist { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.steplist li { display: flex; gap: 12px; align-items: flex-start; }
+.steplist .stepnum {
+  width: 30px; height: 30px; min-width: 30px; border-radius: 50%;
+  background: var(--blue-700); color: var(--white);
+  font-weight: 800; font-size: .95rem;
+  display: grid; place-items: center; margin-top: 1px;
+}
+.steplist li span:last-child { padding-top: 3px; }
+.checklist.compact { gap: 10px; }
+.checklist.compact .ico { width: 36px; height: 36px; min-width: 36px; }
+.checklist.compact .ico svg { width: 19px; height: 19px; }
+.checklist.compact li span:last-child { padding-top: 6px; }
+
+/* ---- plain-language "what is sent / no fee" note (CW Task 2/3 Q3) ---------*/
+.sendnote {
+  display: flex; gap: 9px; align-items: flex-start;
+  background: var(--blue-50);
+  border: 1.5px solid var(--blue-100);
+  border-radius: var(--r-md);
+  padding: 11px 13px;
+  font-size: .9rem; color: var(--navy-800); font-weight: 600;
+}
+.sendnote svg { width: 20px; height: 20px; min-width: 20px; color: var(--blue-700); margin-top: 1px; }
+
+/* ---- localised date-of-birth picker (CW Task 2 Q2) -----------------------*/
+.dobgrid { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 8px; }
+.dobcol { display: flex; flex-direction: column; gap: 4px; }
+.dobcol small { font-size: .76rem; font-weight: 800; color: var(--ink-soft); }
+.dobcol select { min-height: var(--tap); padding: 0 8px; }
+.chip.wide { width: 100%; flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.chip.wide svg { width: 20px; height: 20px; }
+.chip.wide.on { border-color: var(--blue-600); border-width: 2px; background: var(--blue-50); color: var(--navy-800); }
+
+/* ---- inline validation (CW Task 2 Q4) ------------------------------------*/
+.field.has-error input, .field.has-error select { border-color: var(--err); background: var(--err-bg); }
+.errmsg {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .86rem; font-weight: 700; color: var(--err);
+}
+.errmsg svg { width: 17px; height: 17px; min-width: 17px; }
+.errbanner {
+  flex-direction: row; align-items: center; gap: 10px;
+  border-color: var(--err); background: var(--err-bg); color: var(--err);
+  font-weight: 800; box-shadow: none;
+}
+.errbanner svg { width: 22px; height: 22px; min-width: 22px; }
+
+/* ---- resilient photo upload (CW Task 2 Q4) -------------------------------*/
+.uploadtile .thumb {
+  width: 46px; height: 46px; border-radius: 8px;
+  background: #bfe6cf; color: var(--ok);
+  display: grid; place-items: center;
+}
+.uploadtile .thumb svg { width: 26px; height: 26px; }
+.uploadtile .retake {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .82rem; font-weight: 800; color: var(--blue-700);
+}
+.uploadtile .retake svg { width: 16px; height: 16px; }
+
+/* ---- two-action footer: Save vs Send (CW Task 2 Q3) ----------------------*/
+.footer.two .btn { flex: 1; }
+
+/* ---- bank: recommended badge + jargon explainers (CW Task 3 Q2/Q3) -------*/
+.rec {
+  font-size: .68rem; font-weight: 800; letter-spacing: .3px;
+  background: var(--ok-bg); color: var(--ok);
+  padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  vertical-align: middle;
+}
+.defrow {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font); font-size: 1rem; font-weight: 800; color: var(--navy-800);
+  padding: 8px 0; min-height: 48px; text-align: start;
+}
+.defrow > span:nth-child(2) { flex: 1; }
+.defrow svg { width: 22px; height: 22px; color: var(--blue-700); }
+.defrow .defchev { display: grid; transition: transform .15s ease; color: #95a3ba; }
+.defrow .defchev.open { transform: rotate(90deg); }
+.defrow:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: var(--r-sm); }
+.defans { padding: 0 0 8px; border-bottom: 1px solid var(--line-soft); }

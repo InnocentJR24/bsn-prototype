@@ -74,7 +74,10 @@ const I18N = {
   asylum_doc3:     { ti: "ናይ COA መቐበሊ ቦታ ሓበሬታ",    ar: "معلومات مركز استقبال COA", en: "COA reception location info", nl: "COA-opvanglocatie informatie" },
   asylum_redirect: { ti: "ናብ ወግዓዊ IND መርበብ ኪድ",   ar: "اذهب إلى موقع IND الرسمي", en: "Go to the official IND website", nl: "Ga naar de officiële IND-website" },
   asylum_redirect_note: { ti: "ናብ ደገ መርበብ ይወስደኩም — ዳታኹም ኣብዚ ተቐሚጡ ኣሎ።", ar: "سينقلك إلى موقع خارجي — بياناتك محفوظة هنا.", en: "This opens an outside website — your progress here is saved.", nl: "Dit opent een externe website — uw voortgang hier is opgeslagen." },
-  asylum_confirm:  { ti: "ዕቚባ ሓቲተ ኣለኹ",           ar: "لقد قدّمت طلب اللجوء",     en: "I have applied for asylum", nl: "Ik heb asiel aangevraagd" },
+  /* RE-LABELLED after the cognitive walkthrough (Task 1, CW Q3): the old
+     "I have applied for asylum" was ambiguous — Yonas could read it as the act
+     of applying. It now names the checklist action explicitly. */
+  asylum_confirm:  { ti: "ናይ IND ስጉምቲ ወዲአ — ከም ዝተወድአ ምልክት ግበር", ar: "أنهيت خطوة IND — ضع علامة كمكتمل", en: "I have finished the IND step — mark as done", nl: "Ik heb de IND-stap afgerond — markeer als klaar" },
 
   /* ---- BSN form ---- */
   bsn_title:       { ti: "ግዝያዊ BSN ምሕታት",        ar: "طلب BSN مؤقت",           en: "Apply for a temporary BSN", nl: "Tijdelijk BSN aanvragen" },
@@ -118,7 +121,87 @@ const I18N = {
   help_vw_sub:     { ti: "ናጻ ናይ ስደተኛታት ሓገዝ",     ar: "مساعدة مجانية للاجئين",   en: "Free refugee support",   nl: "Gratis vluchtelingenhulp" },
   help_call:       { ti: "ደውሉ",                  ar: "اتصل",                   en: "Call",                   nl: "Bellen" },
   help_interpreter:{ ti: "ኣስተርጓማይ ሕተት",          ar: "اطلب مترجمًا",            en: "Request an interpreter", nl: "Vraag een tolk aan" },
-  close:           { ti: "ዕጸው",                   ar: "إغلاق",                  en: "Close",                  nl: "Sluiten" }
+  close:           { ti: "ዕጸው",                   ar: "إغلاق",                  en: "Close",                  nl: "Sluiten" },
+
+  /* =====================================================================
+   * NEW STRINGS — added in the post-cognitive-walkthrough revision.
+   * Each block is keyed to a finding in the walkthrough (Group 9).
+   * =================================================================== */
+
+  /* --- shared --- */
+  talk_person:     { ti: "ምስ ሰብ/ኣስተርጓማይ ተዛረብ",   ar: "تحدّث إلى شخص / مترجم",    en: "Talk to a person / interpreter", nl: "Praat met iemand / tolk" },
+
+  /* --- Task 1 (asylum): in-app explainer of the IND hand-off (CW Q3) --- */
+  asylum_explainer_title: { ti: "ኣብ IND መርበብ እንታይ ከም ዝገብሩ",  ar: "ماذا ستفعل على موقع IND",   en: "What you will do on the IND website", nl: "Wat u op de IND-website gaat doen" },
+  asylum_explainer_intro: { ti: "ቅድሚ ምኻድኩም፣ እዚ ኣብኡ ዘጋጥመኩም ኢዩ፦", ar: "قبل أن تذهب، إليك ما سيحدث هناك:", en: "Before you go, here is what happens there:", nl: "Voordat u gaat, dit gebeurt daar:" },
+  asylum_step1:    { ti: "ሰነዳት መንነትኩም ንሰራሕተኛ IND ተርእዩ።",     ar: "تُظهر وثائق هويتك لموظف IND.",  en: "You show your identity documents to an IND officer.", nl: "U toont uw identiteitsdocumenten aan een IND-medewerker." },
+  asylum_step2:    { ti: "ካብ ሃገርኩም ስለምንታይ ከም ዝሃደምኩም ትነግሩ። ኣስተርጓማይ ክሕግዘኩም ይኽእል።", ar: "تشرح لماذا فررت من بلدك. يمكن لمترجم مساعدتك.", en: "You explain why you fled your country. An interpreter can help you.", nl: "U legt uit waarom u uw land bent ontvlucht. Een tolk kan u helpen." },
+  asylum_step3:    { ti: "ኣሰር ኣጻብዕትኹምን ስእልኹምን ይውሰድ።",         ar: "تُؤخذ بصماتك وصورتك.",          en: "They take your fingerprints and photo.", nl: "Zij nemen uw vingerafdrukken en foto." },
+  asylum_step4:    { ti: "ናይ ቃለ-መሕትት ዕለት ይውሃበኩም።",          ar: "تحصل على موعد لمقابلة اللجوء.", en: "You get a date for your asylum interview.", nl: "U krijgt een datum voor uw asielgesprek." },
+  asylum_bring:    { ti: "ምሳኹም ውሰዱ",                          ar: "خذ معك",                       en: "Bring with you",          nl: "Neem mee" },
+  asylum_ready:    { ti: "ምስ ተዳለኹም፣ ናብ IND መርበብ ኪዱ",        ar: "عندما تكون جاهزًا، افتح موقع IND", en: "When you are ready, open the IND website", nl: "Als u klaar bent, open de IND-website" },
+  /* confirmation that the self-certify button does NOT submit anything (CW Q3 & Q4) */
+  asylum_confirm_note: { ti: "ናይ ዝርዝርካ ምልክት ጥራይ ኢዩ ዝቕይር። ናብ IND ዝለኣኾ ነገር የለን።", ar: "هذا يحدّث قائمتك فقط. لا يُرسل أي شيء إلى IND.", en: "This only updates your checklist. It does not send anything to the IND.", nl: "Dit werkt alleen uw lijst bij. Er wordt niets naar de IND gestuurd." },
+  asylum_confirm_q:    { ti: "ናይ IND ስጉምቲ ኣብ ወግዓዊ መርበብ ወዲእኩም ዲኹም?", ar: "هل أنهيت خطوة IND على الموقع الرسمي؟", en: "Have you finished the IND step on the official website?", nl: "Heeft u de IND-stap op de officiële website afgerond?" },
+  yes_mark_done:   { ti: "እወ፣ ከም ዝተወድአ ምልክት ግበር",  ar: "نعم، ضع علامة كمكتمل",     en: "Yes, mark as done",      nl: "Ja, markeer als klaar" },
+  not_yet:         { ti: "ገና",                    ar: "ليس بعد",                en: "Not yet",                nl: "Nog niet" },
+
+  /* --- Task 2 (BSN): localised date of birth + approximate date (CW Q2/Q3) --- */
+  dob_day:         { ti: "መዓልቲ",                  ar: "اليوم",                  en: "Day",                    nl: "Dag" },
+  dob_month:       { ti: "ወርሒ",                   ar: "الشهر",                  en: "Month",                  nl: "Maand" },
+  dob_year:        { ti: "ዓመት",                   ar: "السنة",                  en: "Year",                   nl: "Jaar" },
+  dob_unsure:      { ti: "ልክዕ መዓልቲ ኣይፈልጥን እየ",     ar: "لست متأكدًا من اليوم بالضبط", en: "I'm not sure of the exact day", nl: "Ik weet de exacte dag niet zeker" },
+  dob_unsure_hint: { ti: "እንተዘይፈሊጥኩም ዓመት ጥራይ ክትህቡ ትኽእሉ። ልሙድ ኢዩ፣ ጸገም የብሉን።", ar: "إن لم تكن متأكدًا يمكنك إعطاء السنة فقط. هذا أمر شائع ولا بأس به.", en: "If you are not sure, you can give only the year. This is common and it is okay.", nl: "Als u het niet zeker weet, kunt u alleen het jaar opgeven. Dit komt vaak voor en is prima." },
+  month_1:  { ti: "ጥሪ",     ar: "يناير",   en: "January",   nl: "januari" },
+  month_2:  { ti: "ለካቲት",  ar: "فبراير",  en: "February",  nl: "februari" },
+  month_3:  { ti: "መጋቢት",  ar: "مارس",    en: "March",     nl: "maart" },
+  month_4:  { ti: "ሚያዝያ",  ar: "أبريل",   en: "April",     nl: "april" },
+  month_5:  { ti: "ግንቦት",  ar: "مايو",    en: "May",       nl: "mei" },
+  month_6:  { ti: "ሰነ",     ar: "يونيو",   en: "June",      nl: "juni" },
+  month_7:  { ti: "ሓምለ",   ar: "يوليو",   en: "July",      nl: "juli" },
+  month_8:  { ti: "ነሓሰ",   ar: "أغسطس",   en: "August",    nl: "augustus" },
+  month_9:  { ti: "መስከረም", ar: "سبتمبر",  en: "September", nl: "september" },
+  month_10: { ti: "ጥቅምቲ",  ar: "أكتوبر",  en: "October",   nl: "oktober" },
+  month_11: { ti: "ሕዳር",   ar: "نوفمبر",  en: "November",  nl: "november" },
+  month_12: { ti: "ታሕሳስ",  ar: "ديسمبر",  en: "December",  nl: "december" },
+
+  /* country of birth — tap-to-choose list instead of free Latin-text typing (CW Q2) */
+  f_country_pick:  { ti: "ሃገርኩም ምረጹ",            ar: "اختر بلدك",              en: "Choose your country",    nl: "Kies uw land" },
+  country_other:   { ti: "ካልእ ሃገር",              ar: "بلد آخر",                en: "Another country",        nl: "Ander land" },
+
+  /* split save vs submit + plain-language note on what is sent (CW Q3) */
+  save_for_later:  { ti: "ንደሓር ኣቐምጥ",            ar: "احفظ لوقت لاحق",          en: "Save for later",         nl: "Bewaar voor later" },
+  send_application:{ ti: "ሕተተይ ስደድ",             ar: "أرسل طلبي",              en: "Send my application",    nl: "Verstuur mijn aanvraag" },
+  send_note:       { ti: "“ስደድ” ምስ ጠወቕኩም፣ ሓበሬታኹም ናብ መንግስቲ ኔዘርላንድ ጥራይ ይኸይድ — BSN ንምስራሕ።", ar: "عند الضغط على «أرسل»، تذهب بياناتك إلى الحكومة الهولندية فقط — لإنشاء BSN.", en: "When you tap Send, your details go only to the Dutch government — to create your BSN.", nl: "Als u op Versturen tikt, gaan uw gegevens alleen naar de Nederlandse overheid — om uw BSN aan te maken." },
+
+  /* inline, in-language validation (CW Q4) */
+  err_summary:     { ti: "ብቐይሕ ዝተመልከቱ ቦታታት ኣርሙ።", ar: "يرجى مراجعة الحقول المحددة بالأحمر.", en: "Please check the fields marked in red.", nl: "Controleer de velden die rood zijn gemarkeerd." },
+  err_given:       { ti: "ናይ መጀመርታ ስምኩም ጽሓፉ።",   ar: "يرجى كتابة اسمك الأول.",   en: "Please write your first name.", nl: "Schrijf uw voornaam." },
+  err_family:      { ti: "ናይ ስድራ ስምኩም ጽሓፉ።",     ar: "يرجى كتابة اسم عائلتك.",   en: "Please write your family name.", nl: "Schrijf uw achternaam." },
+  err_dob:         { ti: "እንተወሓደ ናይ ልደት ዓመት ምረጹ።", ar: "اختر سنة ميلادك على الأقل.", en: "Please choose at least your year of birth.", nl: "Kies ten minste uw geboortejaar." },
+  err_photo:       { ti: "ናይ ሰነድ ስእሊ ወስኹ።",       ar: "أضف صورة لمستندك.",        en: "Please add a photo of your document.", nl: "Voeg een foto van uw document toe." },
+
+  /* resilient photo upload (CW Q4) */
+  photo_added:     { ti: "ስእሊ ተወሲኹ",             ar: "تمت إضافة الصورة",        en: "Photo added",            nl: "Foto toegevoegd" },
+  photo_retake:    { ti: "ንምቕያር ጠውቑ",            ar: "اضغط لإعادة الالتقاط",     en: "Tap to retake",          nl: "Tik om opnieuw te maken" },
+  photo_lowdata:   { ti: "ኣብ ዝደኸመ መስመር ስእሊ ባዕሉ ይንእስ። እንተፈሺሉ፣ እንደገና ጠውቑ።", ar: "على اتصال بطيء يتم تصغير الصورة تلقائيًا. إن فشلت، اضغط للمحاولة مجددًا.", en: "On a slow connection the photo is made smaller automatically. If it fails, tap to try again.", nl: "Bij een trage verbinding wordt de foto automatisch verkleind. Als het mislukt, tik om opnieuw te proberen." },
+
+  /* --- Task 3 (bank): provider guidance + jargon explainers + reassurance --- */
+  bank_recommended:{ ti: "ዝሕበር",                 ar: "موصى به",                en: "Recommended",            nl: "Aanbevolen" },
+  bank_basis_desc: { ti: "ነጻ። ናይ ኔዘርላንድ ኣድራሻ ኣየድልን። ኣፕ ብዓረብኛን እንግሊዝኛን።", ar: "مجاني. لا حاجة لعنوان هولندي. التطبيق بالعربية والإنجليزية.", en: "Free. No Dutch address needed. App in Arabic & English.", nl: "Gratis. Geen Nederlands adres nodig. App in Arabisch & Engels." },
+  bank_volk_desc:  { ti: "ነጻ። ኣብ ኩሉ ከተማ ጨንፈር ኣሎ።", ar: "مجاني. فروع في كل مدينة.", en: "Free. Branches in every city.", nl: "Gratis. Filialen in elke stad." },
+  bank_stad_desc:  { ti: "ነጻ። ምስ COA ይሰርሕ።",      ar: "مجاني. يتعاون مع COA.",    en: "Free. Works together with COA.", nl: "Gratis. Werkt samen met COA." },
+  bank_more:       { ti: "ካልኦት ባንክታት ርአ",        ar: "شاهد بنوكًا أخرى",         en: "See other banks",        nl: "Bekijk andere banken" },
+  bank_what_basic_q:{ ti: "“መሰረታዊ ሕሳብ” እንታይ ማለት ኢዩ?", ar: "ما هو «الحساب الأساسي»؟",  en: "What is a basic account?", nl: "Wat is een basisrekening?" },
+  bank_what_basic_a:{ ti: "ገንዘብ ንምቕባልን ንምኽፋልን ዝኾውን ቀሊል ነጻ ሕሳብ። ክፍሊት የብሉን።", ar: "حساب بسيط مجاني لاستلام ودفع الأموال. بدون رسوم.", en: "A simple, free account to receive and pay money. No costs.", nl: "Een eenvoudige, gratis rekening om geld te ontvangen en te betalen. Geen kosten." },
+  bank_what_iban_q:{ ti: "IBAN እንታይ ኢዩ?",         ar: "ما هو IBAN؟",            en: "What is an IBAN?",       nl: "Wat is een IBAN?" },
+  bank_what_iban_a:{ ti: "ናይ ሕሳብኩም ቁጽሪ ኢዩ። ገንዘብ ምእንቲ ክስደደልኩም ንቐጣሪኹም ወይ COA ትህብዎ።", ar: "هو رقم حسابك. تعطيه لصاحب العمل أو COA ليُرسَل إليك المال.", en: "Your account number. You give it to your employer or COA so money can be sent to you.", nl: "Uw rekeningnummer. U geeft het aan uw werkgever of COA zodat er geld naar u kan worden gestuurd." },
+  bank_no_fee:     { ti: "እዚ ነጻ ሕሳብ ይኸፍት። ሕጂ ገንዘብ ኮነ ክፍሊት የለን። ጸኒሕኩም ባንክ ክትቅይሩ ትኽእሉ።", ar: "هذا يفتح حسابًا مجانيًا. لا مال ولا رسوم الآن. يمكنك تغيير البنك لاحقًا.", en: "This opens a free account. No money and no fee now. You can change bank later.", nl: "Dit opent een gratis rekening. Nu geen geld en geen kosten. U kunt later van bank wisselen." },
+  info_what:       { ti: "እዚ እንታይ ኢዩ?",          ar: "ما هذا؟",                en: "What is this?",          nl: "Wat is dit?" },
+
+  /* --- review-annotation layer (sticky notes for the assignment) --- */
+  notes_show:      { ti: "ለውጥታት ኣርኢ",            ar: "إظهار التغييرات",         en: "Show changes",           nl: "Wijzigingen tonen" },
+  notes_hide:      { ti: "ለውጥታት ሕባእ",            ar: "إخفاء التغييرات",         en: "Hide changes",           nl: "Wijzigingen verbergen" }
 };
 
 function t(key, lang) {

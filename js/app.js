@@ -21,7 +21,12 @@ const App = (() => {
     form: {},                    // bsn form values
     bsn: null,                   // issued number
     iban: null,
-    savedDraft: null             // snapshot for Save & resume
+    savedDraft: null,            // snapshot for Save & resume
+    /* ---- added in the post-cognitive-walkthrough revision ---- */
+    showNotes: true,             // review-annotation (sticky note) layer on by default
+    errors: {},                  // inline, in-language field validation (CW Task 2 Q4)
+    showDefs: { basic: false, iban: false }, // tap-to-explain jargon (CW Task 3 Q3)
+    bankExpanded: false          // single recommended bank, others behind a tap (CW Task 3 Q2)
   };
 
   const root = () => document.getElementById("app");
@@ -42,6 +47,19 @@ const App = (() => {
   }
   function go(screen) { state.screen = screen; render(); window.scrollTo(0, 0); }
 
+  /* Sticky review-note: a yellow annotation pinned next to a changed element,
+     stating the cognitive-walkthrough finding and the change we made. Shown only
+     when the "Show changes" layer is on (body.notes-on), so the clean prototype
+     can still be demoed. Notes are written in English: they are meta-annotations
+     for the evaluators/markers, not part of Yonas's interface. */
+  function sticky(ref, text) {
+    return `
+      <div class="sticky" role="note">
+        <span class="num">${ICON.note}</span>
+        <span class="sbody"><b>Change &middot; ${ref}</b>${text}</span>
+      </div>`;
+  }
+
   /* ---- chrome (topbar + status strip) shared across app screens ---- */
   function chrome(inner, { showBack = false, backTo = "home" } = {}) {
     const backBtn = showBack
@@ -61,6 +79,7 @@ const App = (() => {
       <div class="statusstrip">
         <span class="pill"><span class="dot"></span>${T("offline_badge")}</span>
         <button class="pill toggle" data-act="lowdata" aria-pressed="${state.lowData}">${ICON.wifiOff}${T("low_data")}</button>
+        <button class="pill toggle notes" data-act="notes" aria-pressed="${state.showNotes}">${ICON.note}${state.showNotes ? T("notes_hide") : T("notes_show")}</button>
       </div>
       ${inner}`;
   }
@@ -181,6 +200,7 @@ const App = (() => {
    * ===================================================================== */
   function viewAsylum() {
     const item = (ic, key) => `<li><span class="ico">${ic}</span><span>${T(key)}</span></li>`;
+    const step = (n, key) => `<li><span class="stepnum">${n}</span><span>${T(key)}</span></li>`;
     return chrome(`
       <div class="screen">
         <h1 class="title">${T("asylum_title")}</h1>
@@ -193,13 +213,38 @@ const App = (() => {
             ${item(ICON.help, "asylum_doc3")}
           </ul>
         </div>
+
+        ${sticky("Task 1 &middot; CW Q3", "The bare redirect was the main exclusion point — once Yonas left, the language-first protection disappeared. Added an in-app, in-language explainer of exactly what happens on the IND site (illustrated step list + what to bring) before he leaves.")}
+        <div class="card">
+          <b class="section-label">${ICON.doc}${T("asylum_explainer_title")}</b>
+          <p class="lead">${T("asylum_explainer_intro")}</p>
+          <ol class="steplist">
+            ${step(1, "asylum_step1")}
+            ${step(2, "asylum_step2")}
+            ${step(3, "asylum_step3")}
+            ${step(4, "asylum_step4")}
+          </ol>
+          <b class="section-label" style="font-size:.98rem">${T("asylum_bring")}</b>
+          <ul class="checklist compact">
+            ${item(ICON.id, "asylum_doc1")}
+            ${item(ICON.doc, "asylum_doc2")}
+            ${item(ICON.asylum, "asylum_doc3")}
+          </ul>
+        </div>
+
         <div class="card accent">
-          <button class="btn ghost" data-act="indlink">${ICON.external}${T("asylum_redirect")}</button>
+          <button class="btn ghost" data-act="indlink">${ICON.external}${T("asylum_ready")}</button>
           <span class="hint">${T("asylum_redirect_note")}</span>
         </div>
+
+        ${sticky("Task 1 &middot; inclusion", "Added a prominent in-language &lsquo;Talk to a person / interpreter&rsquo; shortcut here — the walkthrough flagged the IND hand-off as where Yonas is most likely to stall.")}
+        <button class="btn ghost" data-act="help">${ICON.phone}${T("talk_person")}</button>
+
+        ${sticky("Task 1 &middot; CW Q3/Q4", "Re-labelled the ambiguous &lsquo;I have applied for asylum&rsquo; button so it names the checklist action, and added a confirmation step explaining that it does not send anything to the IND &mdash; removing the false-completed risk.")}
+        <p class="sendnote">${ICON.shield}${T("asylum_confirm_note")}</p>
       </div>
       <div class="footer">
-        <button class="btn primary" data-act="finishAsylum">${ICON.check}${T("asylum_confirm")}</button>
+        <button class="btn primary" data-act="askConfirmAsylum">${ICON.check}${T("asylum_confirm")}</button>
       </div>`, { showBack: true });
   }
 
@@ -208,11 +253,77 @@ const App = (() => {
    * ===================================================================== */
   function field(name, labelKey, icon, { type = "text", required = true, hint } = {}) {
     const v = state.form[name] || "";
+    const err = state.errors[name];
     return `
-      <div class="field">
+      <div class="field ${err ? "has-error" : ""}">
         <label>${icon}${T(labelKey)} ${required ? `<span class="req">• ${T("required")}</span>` : ""}</label>
         <input type="${type}" data-field="${name}" value="${v}" placeholder="" />
+        ${err ? `<span class="errmsg">${ICON.info}${T(err)}</span>` : ""}
         ${hint ? `<span class="hint">${T(hint)}</span>` : ""}
+      </div>`;
+  }
+
+  /* Localised date-of-birth picker (CW Task 2 Q2/Q3). Replaces the native
+     <input type=date>, which rendered in an East-Asian locale (年/月/日) and
+     assumed an exact Gregorian date. Three tap-to-choose selects with month
+     names in the chosen language, plus an "I'm not sure of the exact day"
+     option so a user who knows only the year (Ge'ez calendar) can still proceed. */
+  function dobPicker() {
+    const unsure = !!state.form.dobUnsure;
+    const err = state.errors.dob;
+    const opt = (val, lbl, cur) => `<option value="${val}" ${String(cur) === String(val) ? "selected" : ""}>${lbl}</option>`;
+    const sel = (name, options, lock) => `
+      <select data-field="${name}" ${lock ? "disabled" : ""}>
+        <option value="">—</option>
+        ${options.map(([val, lbl]) => opt(val, lbl, state.form[name] || "")).join("")}
+      </select>`;
+    const days = Array.from({ length: 31 }, (_, i) => [i + 1, i + 1]);
+    const months = Array.from({ length: 12 }, (_, i) => [i + 1, T("month_" + (i + 1))]);
+    const nowY = new Date().getFullYear();
+    const years = [];
+    for (let y = nowY - 14; y >= nowY - 90; y--) years.push([y, y]);
+    return `
+      <div class="field ${err ? "has-error" : ""}">
+        <label>${ICON.calendar}${T("f_dob")} <span class="req">• ${T("required")}</span></label>
+        <div class="dobgrid">
+          <span class="dobcol"><small>${T("dob_day")}</small>${sel("dobDay", days, unsure)}</span>
+          <span class="dobcol"><small>${T("dob_month")}</small>${sel("dobMonth", months, unsure)}</span>
+          <span class="dobcol"><small>${T("dob_year")}</small>${sel("dobYear", years, false)}</span>
+        </div>
+        <button class="chip wide ${unsure ? "on" : ""}" data-act="dobUnsure" aria-pressed="${unsure}">
+          ${unsure ? ICON.check : ICON.calendar}${T("dob_unsure")}
+        </button>
+        <span class="hint">${T("dob_unsure_hint")}</span>
+        ${err ? `<span class="errmsg">${ICON.info}${T(err)}</span>` : ""}
+      </div>`;
+  }
+
+  /* Country of birth (CW Task 2 Q2): tap-to-choose dropdown with each country
+     shown in Tigrinya / Arabic / English, instead of a free-text box that
+     silently required Latin-script typing. Common origin countries are listed
+     first; "Another country" is the fallback. */
+  function countrySelect() {
+    const countries = [
+      ["Eritrea",     "ኤርትራ · إريتريا · Eritrea"],
+      ["Ethiopia",    "ኢትዮጵያ · إثيوبيا · Ethiopia"],
+      ["Sudan",       "ሱዳን · السودان · Sudan"],
+      ["South Sudan", "ደቡብ ሱዳን · جنوب السودان · South Sudan"],
+      ["Somalia",     "ሶማልያ · الصومال · Somalia"],
+      ["Syria",       "ሶርያ · سوريا · Syria"],
+      ["Iraq",        "ዒራቕ · العراق · Iraq"],
+      ["Yemen",       "የመን · اليمن · Yemen"],
+      ["Afghanistan", "ኣፍጋኒስታን · أفغانستان · Afghanistan"],
+      ["Iran",        "ኢራን · إيران · Iran"]
+    ];
+    const v = state.form.country || "";
+    return `
+      <div class="field">
+        <label>${ICON.globe}${T("f_country")}</label>
+        <select data-field="country">
+          <option value="">${T("f_country_pick")}</option>
+          ${countries.map(([val, lbl]) => `<option value="${val}" ${v === val ? "selected" : ""}>${lbl}</option>`).join("")}
+          <option value="__other" ${v === "__other" ? "selected" : ""}>${T("country_other")}</option>
+        </select>
       </div>`;
   }
   function selectField(name, labelKey, icon, options) {
@@ -235,10 +346,16 @@ const App = (() => {
       <div class="screen">
         <h1 class="title">${T("bsn_title")}</h1>
         <p class="lead">${T("bsn_intro")}</p>
+        ${state.errors._summary ? `<div class="card errbanner">${ICON.info}<span>${T("err_summary")}</span></div>` : ""}
         ${field("given", "f_given", ICON.person)}
         ${field("family", "f_family", ICON.person)}
-        ${field("dob", "f_dob", ICON.doc, { type:"date" })}
-        ${field("country", "f_country", ICON.globe)}
+
+        ${sticky("Task 2 &middot; CW Q2", "The native date control rendered in an East-Asian locale (年/月/日) and assumed an exact Gregorian date. Replaced with a localised Day/Month/Year picker (month names in the chosen language) plus an &lsquo;I&rsquo;m not sure of the exact day&rsquo; option for the Ge&lsquo;ez-calendar reality.")}
+        ${dobPicker()}
+
+        ${sticky("Task 2 &middot; CW Q2", "&lsquo;Country of birth&rsquo; was a free-text box that silently required Latin typing. It is now a tap-to-choose dropdown showing countries in Tigrinya, Arabic and English.")}
+        ${countrySelect()}
+
         <div class="field">
           <label>${ICON.person}${T("f_gender")}</label>
           <div class="chips">${genChips}</div>
@@ -251,18 +368,25 @@ const App = (() => {
               .map(c => `<option value="${c}" ${state.form.coa===c?"selected":""}>${c}</option>`).join("")}
           </select>
         </div>
-        <div class="field">
+
+        ${sticky("Task 2 &middot; CW Q4", "Made the photo step resilient on an unstable AZC connection: it now shows a confirmation thumbnail, a one-tap retake, and a note that the image is automatically compressed (low-data).")}
+        <div class="field ${state.errors.docPhoto ? "has-error" : ""}">
           <label>${ICON.camera}${T("f_doc_upload")} <span class="req">• ${T("required")}</span></label>
           <button class="uploadtile ${filled ? "filled" : ""}" data-act="upload">
-            ${filled ? ICON.check : ICON.camera}
-            <span>${filled ? T("done") : T("take_photo")}</span>
+            ${filled ? `<span class="thumb">${ICON.id}</span>` : ICON.camera}
+            <span>${filled ? T("photo_added") + " ✓" : T("take_photo")}</span>
+            ${filled ? `<small class="retake">${ICON.retry}${T("photo_retake")}</small>` : ""}
           </button>
-          <span class="hint">${T("f_doc_hint")}</span>
+          <span class="hint">${T("photo_lowdata")}</span>
+          ${state.errors.docPhoto ? `<span class="errmsg">${ICON.info}${T("err_photo")}</span>` : ""}
         </div>
+
+        ${sticky("Task 2 &middot; CW Q3", "Split the single combined button into two distinct actions &mdash; &lsquo;Save for later&rsquo; and &lsquo;Send my application&rsquo; &mdash; and added a one-line note saying exactly what is sent and to whom.")}
+        <p class="sendnote">${ICON.shield}${T("send_note")}</p>
       </div>
-      <div class="footer">
-        <button class="btn ghost narrow" data-act="save" aria-label="${T("save_resume")}">${ICON.doc}</button>
-        <button class="btn primary" data-act="submitBsn">${ICON.id}${T("bsn_submit")}</button>
+      <div class="footer two">
+        <button class="btn ghost" data-act="save">${ICON.doc}${T("save_for_later")}</button>
+        <button class="btn primary" data-act="submitBsn">${ICON.id}${T("send_application")}</button>
       </div>`, { showBack: true });
   }
 
@@ -297,29 +421,57 @@ const App = (() => {
   function viewBank() {
     if (state.iban) return viewBankSuccess();
     const banks = [
-      ["bank-basis", "Basisbank"],
-      ["bank-volk", "Volksbank"],
-      ["bank-stad", "Stadsbank"]
+      ["bank-basis", "Basisbank", "bank_basis_desc", true],
+      ["bank-volk",  "Volksbank", "bank_volk_desc",  false],
+      ["bank-stad",  "Stadsbank", "bank_stad_desc",  false]
     ];
     const chosen = state.form.bank || "";
-    const list = banks.map(([v, label]) => `
+    const visible = state.bankExpanded ? banks : banks.filter(b => b[3]);
+    const list = visible.map(([v, label, descKey, rec]) => `
       <button class="taskcard ${chosen===v?'active':''}" data-act="pickbank" data-v="${v}">
         <span class="glyph">${ICON.bank}</span>
-        <span class="meta"><b>${label}</b><small>${T("bank_basic")}</small></span>
+        <span class="meta">
+          <b>${label} ${rec ? `<span class="rec">${T("bank_recommended")}</span>` : ""}</b>
+          <small>${T(descKey)}</small>
+        </span>
         <span class="chev" style="color:var(--blue-700)">${chosen===v ? ICON.check : ICON.chevron}</span>
       </button>`).join("");
+    const moreBtn = state.bankExpanded ? "" :
+      `<button class="btn ghost" data-act="moreBanks">${ICON.chevron}${T("bank_more")}</button>`;
+    const defRow = (act, qKey, aKey, open) => `
+      <button class="defrow" data-act="${act}" aria-expanded="${open}">
+        ${ICON.info}<span>${T(qKey)}</span><span class="defchev ${open?"open":""}">${ICON.chevron}</span>
+      </button>
+      ${open ? `<p class="lead defans">${T(aKey)}</p>` : ""}`;
+
     return chrome(`
       <div class="screen">
         <h1 class="title">${T("bank_title")}</h1>
         <p class="lead">${T("bank_intro")}</p>
+
+        ${sticky("Task 3 &middot; CW Q3", "Added tap-to-explain definitions for the unexplained jargon &lsquo;basic account&rsquo; and &lsquo;IBAN&rsquo;, in the user&rsquo;s own language.")}
+        <div class="card">
+          ${defRow("defBasic", "bank_what_basic_q", "bank_what_basic_a", state.showDefs.basic)}
+          ${defRow("defIban",  "bank_what_iban_q",  "bank_what_iban_a",  state.showDefs.iban)}
+        </div>
+
         <div class="card ok">
           <div style="display:flex;align-items:center;gap:12px">
             <span class="checklist"><span class="ico" style="background:#bfe6cf;color:var(--ok)">${ICON.id}</span></span>
             <div><b>${T("bank_prefill")}</b><div style="font-weight:800;font-size:1.2rem;letter-spacing:2px;color:var(--navy-800);margin-top:4px;font-variant-numeric:tabular-nums">${state.bsn || ""}</div></div>
           </div>
         </div>
+
         <b class="section-label">${T("bank_choose")}</b>
+        ${sticky("Task 3 &middot; CW Q2", "Providers no longer look identical with no basis to choose. One free option is now shown as &lsquo;Recommended&rsquo; with a plain-language one-liner, the others are behind &lsquo;See other banks&rsquo; &mdash; removing the equal-options decision freeze.")}
         ${list}
+        ${moreBtn}
+
+        ${sticky("Task 3 &middot; CW Q3", "Added an explicit reassurance that this opens a free account &mdash; no money, no fee &mdash; and that the bank can be changed later, for a user anxious about official commitments.")}
+        <p class="sendnote">${ICON.shield}${T("bank_no_fee")}</p>
+
+        ${sticky("Task 3 &middot; inclusion", "Kept a prominent in-language &lsquo;Talk to a person / interpreter&rsquo; button on this screen so Yonas can verify before committing.")}
+        <button class="btn ghost" data-act="help">${ICON.phone}${T("talk_person")}</button>
       </div>
       <div class="footer">
         <button class="btn primary" data-act="submitBank" ${chosen?"":"disabled"}>${ICON.bank}${T("bank_submit")}</button>
@@ -399,6 +551,22 @@ const App = (() => {
       </div>`;
   }
 
+  /* Confirmation before the asylum self-certification (CW Task 1 Q3/Q4):
+     makes explicit that marking the step done does NOT file anything with the
+     IND, so it cannot create a false sense that the claim is genuinely lodged. */
+  function asylumConfirmOverlay() {
+    return `
+      <div class="overlay" data-overlay="asylumConfirm">
+        <div class="sheet" role="dialog" aria-modal="true" aria-label="${T("asylum_confirm_q")}">
+          <span class="grip"></span>
+          <h2>${ICON.shield}${T("asylum_confirm_q")}</h2>
+          <p class="lead">${T("asylum_confirm_note")}</p>
+          <button class="btn primary" data-act="finishAsylum">${ICON.check}${T("yes_mark_done")}</button>
+          <button class="btn ghost" data-act="closeOverlay">${T("not_yet")}</button>
+        </div>
+      </div>`;
+  }
+
   /* ---- which overlay (if any) is open ---- */
   let overlay = null;
 
@@ -408,6 +576,7 @@ const App = (() => {
   function render() {
     setDir();
     document.body.classList.toggle("low-data", state.lowData);
+    document.body.classList.toggle("notes-on", state.showNotes);
     let body;
     switch (state.screen) {
       case "language": body = viewLanguage(); break;
@@ -422,6 +591,7 @@ const App = (() => {
     if (overlay === "privacy") ov = privacyOverlay();
     if (overlay === "help")    ov = helpOverlay();
     if (overlay === "lang")    ov = langOverlay();
+    if (overlay === "asylumConfirm") ov = asylumConfirmOverlay();
     root().innerHTML = `<div class="phone">${body}${ov}</div>`;
   }
 
@@ -463,6 +633,7 @@ const App = (() => {
       case "help": overlay = "help"; render(); break;
       case "closeOverlay": overlay = null; render(); break;
       case "lowdata": state.lowData = !state.lowData; render(); break;
+      case "notes": state.showNotes = !state.showNotes; render(); break;
       case "back": go(el.dataset.to || "home"); break;
 
       case "task": {
@@ -475,26 +646,50 @@ const App = (() => {
 
       /* asylum */
       case "indlink": toast(T("offline_badge")); break; // demo: would window.open IND
-      case "finishAsylum": state.tasks.asylum = "done"; go("home"); break;
+      case "askConfirmAsylum": overlay = "asylumConfirm"; render(); break;
+      case "finishAsylum": overlay = null; state.tasks.asylum = "done"; go("home"); break;
 
       /* bsn form */
       case "gender": state.form.gender = el.dataset.v; render(); break;
-      case "upload": state.form.docPhoto = true; render(); break;
+      case "upload": state.form.docPhoto = true; delete state.errors.docPhoto; render(); break;
+      case "dobUnsure":
+        state.form.dobUnsure = !state.form.dobUnsure;
+        if (state.form.dobUnsure) { state.form.dobDay = ""; state.form.dobMonth = ""; }
+        delete state.errors.dob; render(); break;
       case "save":
         state.savedDraft = JSON.parse(JSON.stringify(state.form));
         toast(T("saved_msg")); break;
       case "resume":
         state.form = JSON.parse(JSON.stringify(state.savedDraft));
         state.tasks.bsn = "progress"; go("bsn"); break;
-      case "submitBsn":
+      case "submitBsn": {
+        /* inline, in-language validation (CW Task 2 Q4) */
+        const errs = {};
+        if (!state.form.given  || !state.form.given.trim())  errs.given  = "err_given";
+        if (!state.form.family || !state.form.family.trim()) errs.family = "err_family";
+        if (!state.form.dobYear) errs.dob = "err_dob";
+        if (!state.form.docPhoto) errs.docPhoto = "err_photo";
+        if (Object.keys(errs).length) {
+          errs._summary = true;
+          state.errors = errs;
+          render();
+          const first = root().querySelector(".has-error");
+          if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+          break;
+        }
+        state.errors = {};
         state.bsn = genBsn();
         state.bsnExpiry = expiryYears(3);
         state.tasks.bsn = "done";
         render(); break;
+      }
       case "goBankFromBsn": state.tasks.bank = "progress"; go("bank"); break;
 
       /* bank */
       case "pickbank": state.form.bank = el.dataset.v; render(); break;
+      case "moreBanks": state.bankExpanded = true; render(); break;
+      case "defBasic": state.showDefs.basic = !state.showDefs.basic; render(); break;
+      case "defIban":  state.showDefs.iban  = !state.showDefs.iban;  render(); break;
       case "submitBank":
         state.iban = genIban();
         state.tasks.bank = "done";
@@ -506,7 +701,13 @@ const App = (() => {
 
   function onInput(e) {
     const f = e.target.closest("[data-field]");
-    if (f) state.form[f.dataset.field] = f.value;
+    if (!f) return;
+    const name = f.dataset.field;
+    state.form[name] = f.value;
+    /* clear the matching inline error as the user corrects it (no re-render,
+       so input focus is preserved; the red state clears on the next render) */
+    if (name === "dobYear" || name === "dobMonth" || name === "dobDay") delete state.errors.dob;
+    else delete state.errors[name];
   }
 
   function init() {
