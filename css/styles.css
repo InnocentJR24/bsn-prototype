@@ -494,8 +494,6 @@ body.low-data .sticky { box-shadow: none; }
 }
 .sticky .num svg { width: 18px; height: 18px; }
 .sticky .sbody { font-size: .86rem; line-height: 1.45; }
-.sticky .sbody b { display: block; font-size: .74rem; font-weight: 800; letter-spacing: .4px;
-  text-transform: uppercase; color: #8a6d00; margin-bottom: 3px; }
 
 /* ---- asylum: illustrated in-app step list (CW Task 1 Q3) -----------------*/
 .steplist { list-style: none; display: flex; flex-direction: column; gap: 14px; }

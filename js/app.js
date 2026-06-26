@@ -52,11 +52,11 @@ const App = (() => {
      when the "Show changes" layer is on (body.notes-on), so the clean prototype
      can still be demoed. Notes are written in English: they are meta-annotations
      for the evaluators/markers, not part of Yonas's interface. */
-  function sticky(ref, text) {
+  function sticky(text) {
     return `
       <div class="sticky" role="note">
         <span class="num">${ICON.note}</span>
-        <span class="sbody"><b>Change &middot; ${ref}</b>${text}</span>
+        <span class="sbody">${text}</span>
       </div>`;
   }
 
@@ -214,7 +214,7 @@ const App = (() => {
           </ul>
         </div>
 
-        ${sticky("Task 1 &middot; CW Q3", "The bare redirect was the main exclusion point — once Yonas left, the language-first protection disappeared. Added an in-app, in-language explainer of exactly what happens on the IND site (illustrated step list + what to bring) before he leaves.")}
+        ${sticky("The bare redirect was the main exclusion point. Once Yonas left, the language-first protection disappeared. Added an in-app, in-language explainer of exactly what happens on the IND site (illustrated step list + what to bring) before he leaves.")}
         <div class="card">
           <b class="section-label">${ICON.doc}${T("asylum_explainer_title")}</b>
           <p class="lead">${T("asylum_explainer_intro")}</p>
@@ -237,10 +237,10 @@ const App = (() => {
           <span class="hint">${T("asylum_redirect_note")}</span>
         </div>
 
-        ${sticky("Task 1 &middot; inclusion", "Added a prominent in-language &lsquo;Talk to a person / interpreter&rsquo; shortcut here — the walkthrough flagged the IND hand-off as where Yonas is most likely to stall.")}
+        ${sticky("Added a prominent in-language &lsquo;Talk to a person / interpreter&rsquo; shortcut here. The walkthrough flagged the IND hand-off as where Yonas is most likely to stall.")}
         <button class="btn ghost" data-act="help">${ICON.phone}${T("talk_person")}</button>
 
-        ${sticky("Task 1 &middot; CW Q3/Q4", "Re-labelled the ambiguous &lsquo;I have applied for asylum&rsquo; button so it names the checklist action, and added a confirmation step explaining that it does not send anything to the IND &mdash; removing the false-completed risk.")}
+        ${sticky("Re-labelled the ambiguous &lsquo;I have applied for asylum&rsquo; button so it names the checklist action, and added a confirmation step explaining that it does not send anything to the IND. This removes the false-completed risk.")}
         <p class="sendnote">${ICON.shield}${T("asylum_confirm_note")}</p>
       </div>
       <div class="footer">
@@ -350,10 +350,10 @@ const App = (() => {
         ${field("given", "f_given", ICON.person)}
         ${field("family", "f_family", ICON.person)}
 
-        ${sticky("Task 2 &middot; CW Q2", "The native date control rendered in an East-Asian locale (年/月/日) and assumed an exact Gregorian date. Replaced with a localised Day/Month/Year picker (month names in the chosen language) plus an &lsquo;I&rsquo;m not sure of the exact day&rsquo; option for the Ge&lsquo;ez-calendar reality.")}
+        ${sticky("The native date control rendered in an East-Asian locale (年/月/日) and assumed an exact Gregorian date. Replaced with a localised Day/Month/Year picker (month names in the chosen language) plus an &lsquo;I&rsquo;m not sure of the exact day&rsquo; option for the Ge&lsquo;ez-calendar reality.")}
         ${dobPicker()}
 
-        ${sticky("Task 2 &middot; CW Q2", "&lsquo;Country of birth&rsquo; was a free-text box that silently required Latin typing. It is now a tap-to-choose dropdown showing countries in Tigrinya, Arabic and English.")}
+        ${sticky("&lsquo;Country of birth&rsquo; was a free-text box that silently required Latin typing. It is now a tap-to-choose dropdown showing countries in Tigrinya, Arabic and English.")}
         ${countrySelect()}
 
         <div class="field">
@@ -369,7 +369,7 @@ const App = (() => {
           </select>
         </div>
 
-        ${sticky("Task 2 &middot; CW Q4", "Made the photo step resilient on an unstable AZC connection: it now shows a confirmation thumbnail, a one-tap retake, and a note that the image is automatically compressed (low-data).")}
+        ${sticky("Made the photo step resilient on an unstable AZC connection: it now shows a confirmation thumbnail, a one-tap retake, and a note that the image is automatically compressed (low-data).")}
         <div class="field ${state.errors.docPhoto ? "has-error" : ""}">
           <label>${ICON.camera}${T("f_doc_upload")} <span class="req">• ${T("required")}</span></label>
           <button class="uploadtile ${filled ? "filled" : ""}" data-act="upload">
@@ -381,7 +381,7 @@ const App = (() => {
           ${state.errors.docPhoto ? `<span class="errmsg">${ICON.info}${T("err_photo")}</span>` : ""}
         </div>
 
-        ${sticky("Task 2 &middot; CW Q3", "Split the single combined button into two distinct actions &mdash; &lsquo;Save for later&rsquo; and &lsquo;Send my application&rsquo; &mdash; and added a one-line note saying exactly what is sent and to whom.")}
+        ${sticky("Split the single combined button into two distinct actions: &lsquo;Save for later&rsquo; and &lsquo;Send my application&rsquo;. Added a one-line note saying exactly what is sent and to whom.")}
         <p class="sendnote">${ICON.shield}${T("send_note")}</p>
       </div>
       <div class="footer two">
@@ -449,7 +449,7 @@ const App = (() => {
         <h1 class="title">${T("bank_title")}</h1>
         <p class="lead">${T("bank_intro")}</p>
 
-        ${sticky("Task 3 &middot; CW Q3", "Added tap-to-explain definitions for the unexplained jargon &lsquo;basic account&rsquo; and &lsquo;IBAN&rsquo;, in the user&rsquo;s own language.")}
+        ${sticky("Added tap-to-explain definitions for the unexplained jargon &lsquo;basic account&rsquo; and &lsquo;IBAN&rsquo;, in the user&rsquo;s own language.")}
         <div class="card">
           ${defRow("defBasic", "bank_what_basic_q", "bank_what_basic_a", state.showDefs.basic)}
           ${defRow("defIban",  "bank_what_iban_q",  "bank_what_iban_a",  state.showDefs.iban)}
@@ -463,14 +463,14 @@ const App = (() => {
         </div>
 
         <b class="section-label">${T("bank_choose")}</b>
-        ${sticky("Task 3 &middot; CW Q2", "Providers no longer look identical with no basis to choose. One free option is now shown as &lsquo;Recommended&rsquo; with a plain-language one-liner, the others are behind &lsquo;See other banks&rsquo; &mdash; removing the equal-options decision freeze.")}
+        ${sticky("Providers no longer look identical with no basis to choose. One free option is now shown as &lsquo;Recommended&rsquo; with a plain-language one-liner, the others are behind &lsquo;See other banks&rsquo;. This removes the equal-options decision freeze.")}
         ${list}
         ${moreBtn}
 
-        ${sticky("Task 3 &middot; CW Q3", "Added an explicit reassurance that this opens a free account &mdash; no money, no fee &mdash; and that the bank can be changed later, for a user anxious about official commitments.")}
+        ${sticky("Added an explicit reassurance that this opens a free account (no money, no fee now), and that the bank can be changed later. Addresses anxiety about official commitments.")}
         <p class="sendnote">${ICON.shield}${T("bank_no_fee")}</p>
 
-        ${sticky("Task 3 &middot; inclusion", "Kept a prominent in-language &lsquo;Talk to a person / interpreter&rsquo; button on this screen so Yonas can verify before committing.")}
+        ${sticky("Kept a prominent in-language &lsquo;Talk to a person / interpreter&rsquo; button on this screen so Yonas can verify before committing.")}
         <button class="btn ghost" data-act="help">${ICON.phone}${T("talk_person")}</button>
       </div>
       <div class="footer">
