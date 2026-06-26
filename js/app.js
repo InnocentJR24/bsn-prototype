@@ -704,10 +704,24 @@ const App = (() => {
     if (!f) return;
     const name = f.dataset.field;
     state.form[name] = f.value;
-    /* clear the matching inline error as the user corrects it (no re-render,
-       so input focus is preserved; the red state clears on the next render) */
-    if (name === "dobYear" || name === "dobMonth" || name === "dobDay") delete state.errors.dob;
-    else delete state.errors[name];
+    // Clear the matching error immediately in state and in the DOM so the red
+    // border disappears as the user types, without a full re-render (which
+    // would steal focus from the active input).
+    if (name === "dobYear" || name === "dobMonth" || name === "dobDay") {
+      delete state.errors.dob;
+    } else {
+      delete state.errors[name];
+    }
+    const fieldEl = f.closest(".field");
+    if (fieldEl) {
+      fieldEl.classList.remove("has-error");
+      fieldEl.querySelector(".errmsg")?.remove();
+    }
+    // Hide the summary banner once the user starts correcting
+    if (state.errors._summary && Object.keys(state.errors).filter(k => k !== "_summary").length === 0) {
+      delete state.errors._summary;
+      document.querySelector(".errbanner")?.remove();
+    }
   }
 
   function init() {
